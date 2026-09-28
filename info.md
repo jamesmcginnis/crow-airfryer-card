@@ -6,7 +6,7 @@ A liquid-glass [Home Assistant](https://www.home-assistant.io/) card for air fry
 
 > ✨ **AI features are optional.** Nothing AI-powered runs until you turn on AI features and choose a conversation agent in the editor (see [AI Features Setup](#-ai-features-setup-optional) below). Without an agent, the card works fully as a cooking monitor and none of the core features depend on it.
 
-> ⚠️ **Only tested with the [VeSync](https://www.home-assistant.io/integrations/vesync/) integration.** Other air fryer integrations may work, but they haven't been tested. See [Supported Integrations](#-supported-integrations).
+> ⚠️ **Only tested with the [VeSync](https://www.home-assistant.io/integrations/vesync/) integration.** Other air fryer integrations may work, but they haven't been tested.
 
 ---
 
@@ -62,136 +62,9 @@ Each feature has its own toggle in the editor. The assistant only sees this frye
 
 ---
 
-## 🚀 Installation
+## Configuration
 
-### Via HACS (Recommended)
-
-Click the button below to add this repository to HACS:
-
-[![Add to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=jamesmcginnis&repository=crow-airfryer-card&category=plugin)
-
-Then:
-
-1. Open **HACS** in Home Assistant
-2. Go to **Frontend**
-3. Search for **Crow Airfryer Card**
-4. Click **Download**
-5. Reload your browser
-
-### Manual Installation
-
-1. Download `crow-airfryer-card.js` from the [latest release](https://github.com/jamesmcginnis/crow-airfryer-card/releases/latest)
-2. Copy it to `/config/www/crow-airfryer-card.js`
-3. In Home Assistant go to **Settings → Dashboards → Resources**
-4. Add a new resource:
-   - URL: `/local/crow-airfryer-card.js`
-   - Type: **JavaScript module**
-5. Reload your browser
-
----
-
-## 🛠️ Dashboard Card Configuration
-
-Add the card from the card picker by searching for **Crow Airfryer Card**. The editor finds your fryer's sensors for you. Or choose **Manual** and use:
-
-```yaml
-type: custom:crow-airfryer-card
-status_entity: sensor.air_fryer_cooking_status
-```
-
-Everything else can be set in the built-in visual editor, and every option below also works in YAML.
-
-### Entities
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `status_entity` | `string` | **required** | Cooking status sensor (Heating, Cooking, Idle…) |
-| `current_temp_entity` | `string` | — | Current temperature, which drives the heating ring |
-| `set_temp_entity` | `string` | — | Target temperature for heating |
-| `cook_time_entity` | `string` | — | Cook time in minutes, which drives the countdown |
-| `preheat_time_entity` | `string` | — | Preheat time in minutes (shown in the Details popup) |
-| `power_entity` | `string` | — | Power sensor in watts, used for finish detection and energy use |
-| `power_on_threshold` | `number` | `50` | Watts that count as heating (YAML only) |
-| `power_off_threshold` | `number` | `5` | Watts below which the fryer counts as powered down (YAML only) |
-
-### Card & smart plug
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `friendly_name` | `string` | `Air Fryer` | Name shown in the header |
-| `show_name` | `boolean` | `true` | Show the name |
-| `temp_unit_override` | `auto` \| `c` \| `f` | `auto` | Temperature unit |
-| `smart_plug_enabled` | `boolean` | `false` | Turns on plug control from the card |
-| `smart_plug_entity` | `string` | — | The fryer's switch or input boolean |
-
-### Appearance
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `layout` | `dial` \| `pill` \| `tile` \| `timer` | `dial` | Card layout |
-| `appearance` | `auto` \| `light` \| `dark` | `auto` | Theme |
-| `glass` | `0–100` | `50` | Glass transparency, from clear to frosted |
-| `size` | `compact` \| `regular` | `compact` | Regular is about 20% larger |
-| `animation` | `subtle` \| `full` \| `off` \| `system` | `subtle` | Animations |
-| `colors` | `map` | Ember | Hex colours for `preheat`, `cook`, `done`, `paused`, and optionally `idle` |
-
-### AI features
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `ai_features_enabled` | `boolean` | `false` | Turns on the AI features |
-| `ai_conversation_agent` | `string` | — | HA conversation agent used for every AI feature |
-| `ai_enable_tap` / `ai_enable_ask` / `ai_enable_recap` / `ai_enable_week` | `boolean` | `true` | Individual AI features |
-| `ai_related_entities` | `list` | — | Other appliances the assistant may mention for context (YAML only) |
-
-### Example
-
-```yaml
-type: custom:crow-airfryer-card
-status_entity: sensor.air_fryer_cooking_status
-current_temp_entity: sensor.air_fryer_current_temperature
-set_temp_entity: sensor.air_fryer_set_temperature
-cook_time_entity: sensor.air_fryer_cook_time
-power_entity: sensor.air_fryer_plug_power
-friendly_name: Air Fryer
-layout: dial
-smart_plug_enabled: true
-smart_plug_entity: switch.air_fryer_plug
-appearance: auto
-size: regular
-animation: system
-colors:
-  preheat: "#64D2FF"
-  cook: "#0A84FF"
-  done: "#30D158"
-  paused: "#A78BFA"
-ai_features_enabled: true
-ai_conversation_agent: conversation.google_ai_conversation
-```
-
----
-
-## 👆 Interactions
-
-| Gesture | Without AI | With AI on |
-|---|---|---|
-| **Tap the status capsule** (Dial, Timer) | Smart plug on/off with confirmation, or the Details popup if no plug is set | Smart plug on/off, or the tap assistant if no plug is set |
-| **Tap the icon** (Live Activity, Tile) | Smart plug on/off with confirmation, or the Details popup if no plug is set | Smart plug on/off, or the tap assistant if no plug is set |
-| **Tap the ring** (Dial, Timer) | Details popup | Tap assistant |
-| **Tap the name** | Home Assistant's more-info dialog | Tap assistant |
-| **Tap the card** | Details popup (Tile) | Tap assistant (or the actions sheet if Tap assistant is off) |
-| **Long-press the card** | Details popup (Live Activity) | Actions sheet: Details, Ask AI, What happened?, This week |
-
----
-
-## ⏱️ Finish Detection
-
-Cloud-polled status sensors can lag behind the fryer, so the card doesn't rely on the status alone:
-
-1. **Power draw** (with `power_entity`). Once the fryer has been seen heating (≥ `power_on_threshold`, default 50 W), a sustained drop below `power_off_threshold` (default 5 W) marks it as done.
-2. **Countdown expiry** (fallback). If the countdown ran out a little while ago and the status still says cooking, with no power reading saying otherwise, the card shows Done.
-
-This clears when the status leaves cooking/heating or when heating power returns, which means a new cook has started.
+Add the card from the card picker and the editor finds your fryer's sensors for you. Everything is set up in the built-in visual editor, so you don't need any YAML. The README has the full list of YAML options, the interactions table, and details on finish detection.
 
 ---
 
@@ -232,16 +105,8 @@ Free-tier limits vary by model and change over time, so check Google AI Studio f
 
 ## 🧩 Supported Integrations
 
-> ⚠️ **This card has only been tested with the [VeSync](https://www.home-assistant.io/integrations/vesync/) integration**, which is built into Home Assistant. Other air fryer integrations may work if they provide a cooking-status sensor, but they haven't been tested and their status wording may not be recognised.
-
-Power sensors and smart plugs can come from any integration.
+Built for air fryers from the [VeSync](https://www.home-assistant.io/integrations/vesync/) integration, which is built into Home Assistant. It also works with any setup that provides a cooking-status sensor, even with none of the optional entities. Power sensors and smart plugs can come from any integration.
 
 ### Recognised status words
 
 Matched loosely, so variations still work: `heating` / `preheating` → Heating · `cooking` → Cooking · `paused` → Paused · `stop` / `complete` / `done` / `finish` / `end` → Done · `standby` / `idle` / `off` / `ready` → Idle · `error` / `fault` / `fail` → Error · `unavailable` / `unknown` → Offline
-
----
-
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
